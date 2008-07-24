@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="/static/sproutcore/en/detect-browser?1216746211" type="text/javascript"></script>
+    
+      <link href="/static/sproutcore/en/stylesheet.css?1216746211" rel="stylesheet" type="text/css" />
+  <link href="/static/sc_docs/en/stylesheet.css?1216746211" rel="stylesheet" type="text/css" />
+
+  </head>
+  <body class="sc-theme focus">  
+    <script type="text/javascript">
+    if (SC.setupBodyClassNames) SC.setupBodyClassNames() ;
+    </script>
+      
+    <!-- Main Page Body -->
+    
+<div id="header" class="sc-header sc-square-theme header">  <div class="left app-label">
+    <img src="/static/sproutcore/en/images/sproutcore-logo.png?1216746211" /><span class="sc-label-view id_1216922262"></span>
+  </div>
+  <div class="center">
+  </div>
+  <div class="right">
+    <input type="text" class="id_1216922263" />
+  </div>
+</div>
+
+<div id="workspace" class="sc-app-workspace header footer sc-split-view horizontal workspace"><div class="sidebar"><div class="sc-scroll-view source_list">      <div class="sc-collection-view sc-source-list-view id_1216922264"></div>
+        
+</div></div>  
+  <div class="sc-split-divider-view id_1216922265" style="width: 5px;"></div>
+  
+  <div class="tab document_view"></div>
+    
+</div>
+<div id="footer" class="sc-footer sc-square-theme footer">  <div class="left">
+    <a title="Rebuild Docs" class="sc-button-view button regular normal id_1216922266"><span class="button-inner"><span class="label">Rebuild Docs</span></span></a>
+  </div>
+  <div class="center"><span class="sc-label-view id_1216922267"></span></div>
+  <div class="right">
+    
+  </div>
+</div>
+<script>
+window.urlPrefix = "static";
+window.indexPrefix = "";
+</script>
+
+
+
+    <!-- Resources to be removed from DOM on page load -->
+    <div id="resources" style="display:none; visibility: hidden;">
+      <iframe id="runner_tab" class="runner_tab"></iframe>
+
+<div id="rebuilding_tab" class="rebuilding_tab">  <div class="dialog">
+    <h1>
+      <img src="/static/sproutcore/en/images/indicator.gif?1216746211" /> Rebuilding Reference Documentation...<br />(This may take awhile)
+    </h1>
+  </div>
+</div>
+<div id="empty_tab" class="empty_tab"></div>
+<div id="no_docs_panel" class="no_docs_panel" style="width: 400px;"><div>
+  <h1>Client Has No Documents</h1>
+  <p style="font-size: 15px;">This client does not currently have any unit tests.  To add a unit test, open a terminal to the root directly and type:</p>
+  <p style="font-size: 15px; text-align:center;"><code>./script/generate sc_test <span class="sc-label-view id_1216922261"></span>/<b>test_name</b></code></p>
+  </div>
+</div>    </div>
+
+    <!-- Include Site Javascript -->
+      <script type="text/javascript" src="/static/prototype/en/javascript.js?1216746211"></script>
+  <script type="text/javascript" src="/static/sproutcore/en/javascript.js?1216746212"></script>
+  <script type="text/javascript" src="/static/sc_docs/en/javascript.js?1216746211"></script>
+<script type="text/javascript">String.preferredLanguage = "en";</script>
+
+
+<!-- Render Page Views -->
+<script type="text/javascript">
+SC.page = SC.Page.create({
+  runnerTab: Docs.DocFrameView.extend({
+    docBinding: "Docs.docsController.selectedDoc"
+  }).outletFor("#runner_tab") ,
+
+  rebuildingTab: SC.View.extend({
+    
+  }).outletFor("#rebuilding_tab") ,
+
+  emptyTab: SC.View.extend({
+    
+  }).outletFor("#empty_tab") ,
+
+  noDocsPanel: SC.View.extend({
+    outlets: ["id1216922261"],
+    
+    id1216922261: SC.LabelView.extend({
+      contentBinding: "Docs.docsController.clientName",
+      
+      localize: false,
+      escapeHTML: true
+    }).outletFor(".id_1216922261?")
+  }).outletFor("#no_docs_panel") ,
+
+  header: SC.View.extend({
+    outlets: ["id1216922262","id1216922263"],
+    
+    id1216922262: SC.LabelView.extend({
+      valueBinding: "Docs.docsController.displayClientName",
+      
+      localize: false,
+      escapeHTML: true
+    }).outletFor(".id_1216922262?"),
+    
+    id1216922263: SC.TextFieldView.extend({
+      valueBinding: "Docs.docsController.search",
+      
+      hint: "Search Symbols"
+    }).outletFor(".id_1216922263?")
+  }).outletFor("#header") ,
+
+  workspace: SC.SplitView.extend({
+    outlets: ["sidebar","id1216922265","documentView"],
+    
+    sidebar: SC.View.extend({
+      outlets: ["sourceList"],
+      
+      sourceList: SC.ScrollView.extend({
+        outlets: ["id1216922264"],
+        
+        id1216922264: SC.SourceListView.extend({
+          selectionBinding: "Docs.docsController.selection",
+          contentBinding: "Docs.docsController.arrangedObjects",
+          
+          contentValueKey: "title",
+          hasContentBranch: false,
+          groupBy: ['group'],
+          groupVisibleKey: true,
+          hasContentIcon: true,
+          contentIconKey: "icon",
+          acceptsFirstResponder: true
+        }).outletFor(".id_1216922264?")
+      }).outletFor(".source_list?")
+    }).outletFor(".sidebar?"),
+    
+    id1216922265: SC.SplitDividerView.extend({
+      
+    }).outletFor(".id_1216922265?"),
+    
+    documentView: SC.TabView.extend({
+      nowShowingBinding: "Docs.docsController.nowShowingContainer",
+      
+      lazyTabs: "true"
+    }).outletFor(".document_view?"),
+    
+    layoutDirection: "horizontal"
+  }).outletFor("#workspace") ,
+
+  footer: SC.View.extend({
+    outlets: ["id1216922266","id1216922267"],
+    
+    id1216922266: SC.ButtonView.extend({
+      isEnabledBinding: "Docs.docsController.canRebuild",
+      
+      action: "Docs.docsController.rebuildDocs"
+    }).outletFor(".id_1216922266?"),
+    
+    id1216922267: SC.LabelView.extend({
+      valueBinding: "Docs.docsController.nowShowingLabel",
+      
+      localize: false,
+      escapeHTML: true
+    }).outletFor(".id_1216922267?")
+  }).outletFor("#footer") 
+}); 
+</script>
+
+    <!-- Start SproutCore on Page Load -->
+    <script type="text/javascript">window.onload = SC.didLoad;</script>
+
+	</body>
+</html>

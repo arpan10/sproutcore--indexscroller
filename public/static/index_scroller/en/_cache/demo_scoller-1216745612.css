@@ -1,0 +1,22 @@
+ul.index-scroller-view {
+	background-color: #000;
+	padding: 2px 5px 2px 5px;
+	margin: 0 5px;
+  height: 18px; 
+	list-style: none;
+	padding: 0;
+}
+
+li.index-group {
+	display: inline;
+	color: #ddd;
+	font-size: 20px;
+	padding: 5px;
+}
+
+li.selected-index-group {
+	color: #ff7d27;
+	display: inline;
+	font-size: 20px;
+	padding: 5px;
+}

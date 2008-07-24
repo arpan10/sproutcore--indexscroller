@@ -1,0 +1,300 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+  .KEYW {color: #933;}
+  .COMM {color: #bbb; font-style: italic;}
+  .NUMB {color: #393;}
+  .STRN {color: #393;}
+  .REGX {color: #339;}
+  .line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+  </style></head><body><pre><span class='line'>  1</span> <span class="COMM">// ========================================================================</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="COMM">// SproutCore</span><span class="WHIT">
+<span class='line'>  3</span> </span><span class="COMM">// copyright 2006-2008 Sprout Systems, Inc.</span><span class="WHIT">
+<span class='line'>  4</span> </span><span class="COMM">// ========================================================================</span><span class="WHIT">
+<span class='line'>  5</span> 
+<span class='line'>  6</span> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'views/view'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'mixins/delegate_support'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="NAME">SC.HORIZONTAL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'horizontal'</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="NAME">SC.VERTICAL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'vertical'</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 11</span> 
+<span class='line'> 12</span> </span><span class="COMM">/** 
+<span class='line'> 13</span>   @class
+<span class='line'> 14</span> 
+<span class='line'> 15</span>   A split view is used to show views that the user can resize or collapse.
+<span class='line'> 16</span>   To use the split view, you need to add the child views you want layed out
+<span class='line'> 17</span>   separated by divider views (instances of SC.SplitDividerView).
+<span class='line'> 18</span>   
+<span class='line'> 19</span>   When the user clicks and drags on a divider view, it will automatically
+<span class='line'> 20</span>   resize the views immediately before and after the view.  You can constrain
+<span class='line'> 21</span>   the resizing allowed by the split view either by setting a minThickness and
+<span class='line'> 22</span>   maxThickness property on the views themselves or by implementing methods
+<span class='line'> 23</span>   on a delegate object.
+<span class='line'> 24</span> 
+<span class='line'> 25</span>   In addition to resizing views, users can also collapse views by double
+<span class='line'> 26</span>   clicking on a divider view.  When a view is collapsed, it's isVisible 
+<span class='line'> 27</span>   property is set to NO and its space it removed from the view.  Double
+<span class='line'> 28</span>   clicking on a divider again will restore a collapse view.  A user can also
+<span class='line'> 29</span>   start to drag the divider to show the collapsed view.
+<span class='line'> 30</span>   
+<span class='line'> 31</span>   You can programmatically control collapsing behavior by setting the
+<span class='line'> 32</span>   canCollapseViews property on the SplitView, a canCollapse property on each
+<span class='line'> 33</span>   child view, or by implementing the appropriate delegate method.
+<span class='line'> 34</span>   
+<span class='line'> 35</span>   Finally, SplitViews can layout their child views either horizontally or 
+<span class='line'> 36</span>   vertically.  To choose the direction of layout set the layoutDirection
+<span class='line'> 37</span>   property on the view.  This property should be set when the view is created.
+<span class='line'> 38</span>   Changing it dynamically will have an unknown effect.
+<span class='line'> 39</span>   
+<span class='line'> 40</span>   @extends SC.View
+<span class='line'> 41</span>   @extends SC.DelegateSupport
+<span class='line'> 42</span>   
+<span class='line'> 43</span>   @author Charles Jolley
+<span class='line'> 44</span> */</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="NAME">SC.SplitView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">SC.View.extend</span><span class="PUNC">(</span><span class="NAME">SC.DelegateSupport</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="COMM">/** @scope SC.SplitView.prototype */</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 47</span> 
+<span class='line'> 48</span>   </span><span class="NAME">emptyElement</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'&lt;div class="sc-split-view">&lt;/div>'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 49</span>   
+<span class='line'> 50</span>   </span><span class="COMM">/**
+<span class='line'> 51</span>     delegate for controlling split view behavior.
+<span class='line'> 52</span>   */</span><span class="WHIT">
+<span class='line'> 53</span>   </span><span class="NAME">delegate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 54</span>   
+<span class='line'> 55</span>   </span><span class="COMM">/**
+<span class='line'> 56</span>     Direction of layout.  Must be SC.HORIZONTAL || SC.VERTICAL.
+<span class='line'> 57</span>   */</span><span class="WHIT">
+<span class='line'> 58</span>   </span><span class="NAME">layoutDirection</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 59</span> 
+<span class='line'> 60</span>   </span><span class="COMM">/**
+<span class='line'> 61</span>     Set to NO to disable collapsing for all views.
+<span class='line'> 62</span>   */</span><span class="WHIT">
+<span class='line'> 63</span>   </span><span class="NAME">canCollapseViews</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">YES</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 64</span> 
+<span class='line'> 65</span>   </span><span class="COMM">/**
+<span class='line'> 66</span>     Used by split divider to decide if the view can be collapsed.
+<span class='line'> 67</span>   */</span><span class="WHIT">
+<span class='line'> 68</span>   </span><span class="NAME">canCollapseView</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 69</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'canCollapseViews'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">NO</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 70</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'canCollapse'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">NO</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">NO</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 71</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.invokeDelegateMethod</span><span class="PUNC">(</span><span class="NAME">this.delegate</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'splitViewCanCollapse'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 73</span>   
+<span class='line'> 74</span>   </span><span class="COMM">/**
+<span class='line'> 75</span>     One view in your array must have a flexible width to allow proper
+<span class='line'> 76</span>     resizing.  You can set this view manually with this outlet or you can
+<span class='line'> 77</span>     just let the split view choose the center-most view.
+<span class='line'> 78</span>     
+<span class='line'> 79</span>     Views to the left/top of this view will be anchored to the left/top of
+<span class='line'> 80</span>     the parent view.  Views to the right/bottom of this view will be anchored
+<span class='line'> 81</span>     to the right/bottom.
+<span class='line'> 82</span>   */</span><span class="WHIT">
+<span class='line'> 83</span>   </span><span class="NAME">flexibleView</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 84</span>   
+<span class='line'> 85</span>   </span><span class="COMM">/**
+<span class='line'> 86</span>     Sets the thickness of the named view and then lays out the rest of the
+<span class='line'> 87</span>     views.
+<span class='line'> 88</span>     
+<span class='line'> 89</span>     @param {SC.View} view the view to adjust. Must not be a divider.
+<span class='line'> 90</span>     @param {Number} offset the new desired offset
+<span class='line'> 91</span>     @returns the actual allowed offset
+<span class='line'> 92</span>   */</span><span class="WHIT">
+<span class='line'> 93</span>   </span><span class="NAME">setThicknessForView</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 94</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'parentNode'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 95</span>       </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"view must belong to reciever (view: %@)"</span><span class="PUNC">.</span><span class="NAME">fmt</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 97</span> 
+<span class='line'> 98</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'layoutDirection'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 99</span>     
+<span class='line'>100</span>     </span><span class="COMM">// constrain to thickness set on view.</span><span class="WHIT">
+<span class='line'>101</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'maxThickness'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">min</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'minThickness'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.min</span><span class="PUNC">(</span><span class="NAME">max</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>104</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">min</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.max</span><span class="PUNC">(</span><span class="NAME">min</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span>     
+<span class='line'>106</span>     </span><span class="COMM">// constrain to thickness determined by delegate.</span><span class="WHIT">
+<span class='line'>107</span>     </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.invokeDelegateMethod</span><span class="PUNC">(</span><span class="NAME">this.delegate</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'splitViewConstrainThickness'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">view</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span>     
+<span class='line'>109</span>     </span><span class="COMM">// thickness cannot be greater than the total of all the other views (</span><span class="WHIT">
+<span class='line'>110</span>     </span><span class="COMM">// except for the flexibleView) added together.</span><span class="WHIT">
+<span class='line'>111</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">total</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'innerFrame'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span>     </span><span class="NAME">available</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">total.width</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">total.height</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">views</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'childNodes'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">idx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.length</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'flexibleView'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span>     </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="PUNC">--</span><span class="NAME">idx</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>117</span>       </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">currentView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">views</span><span class="PUNC">[</span><span class="NAME">idx</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>118</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">(</span><span class="NAME">currentView</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">currentView</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>119</span>         </span><span class="NAME">available</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.thicknessForView</span><span class="PUNC">(</span><span class="NAME">currentView</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>121</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>122</span>     </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.min</span><span class="PUNC">(</span><span class="NAME">thickness</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">available</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>123</span>     
+<span class='line'>124</span>     </span><span class="COMM">// cannot be less than 0</span><span class="WHIT">
+<span class='line'>125</span>     </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.max</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span>     
+<span class='line'>127</span>     </span><span class="COMM">// now apply constrained value</span><span class="WHIT">
+<span class='line'>128</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">this.thicknessForView</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>129</span>       
+<span class='line'>130</span>       </span><span class="COMM">// un-collapse if needed.</span><span class="WHIT">
+<span class='line'>131</span>       </span><span class="NAME">view.set</span><span class="PUNC">(</span><span class="STRN">'isCollapsed'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>132</span>       
+<span class='line'>133</span>       </span><span class="COMM">// set new frame</span><span class="WHIT">
+<span class='line'>134</span>       </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">f</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">width</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">height</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">thickness</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>135</span>       </span><span class="NAME">view.set</span><span class="PUNC">(</span><span class="STRN">'frame'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">f</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>136</span>       
+<span class='line'>137</span>       </span><span class="COMM">// and layout</span><span class="WHIT">
+<span class='line'>138</span>       </span><span class="NAME">this.layout</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>140</span>     
+<span class='line'>141</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>142</span> 
+<span class='line'>143</span>   </span><span class="COMM">/**
+<span class='line'>144</span>     Returns the thickness for a given view.
+<span class='line'>145</span>     
+<span class='line'>146</span>     @param {SC.View} view the view to get.
+<span class='line'>147</span>     @returns the view with the width.
+<span class='line'>148</span>   */</span><span class="WHIT">
+<span class='line'>149</span>   </span><span class="NAME">thicknessForView</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>150</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'layoutDirection'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>151</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ret</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'frame'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>152</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">ret.width</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">ret.height</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>153</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>154</span>   
+<span class='line'>155</span>   </span><span class="COMM">/**
+<span class='line'>156</span>     Finds the flexible view.
+<span class='line'>157</span>     
+<span class='line'>158</span>     This will use the flexibleView property if you set it or use the center
+<span class='line'>159</span>     most view that is not a divider.
+<span class='line'>160</span>   */</span><span class="WHIT">
+<span class='line'>161</span>   </span><span class="NAME">computeFlexibleView</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>162</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'flexibleView'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">flexibleView</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>164</span>       </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">views</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'childNodes'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span>       </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">views</span><span class="PUNC">[</span><span class="NAME">Math.ceil</span><span class="PUNC">(</span><span class="NAME">views.length</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">)</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>167</span>     
+<span class='line'>168</span>     </span><span class="COMM">// If the flexible view is a divider, find the first non-g.</span><span class="WHIT">
+<span class='line'>169</span>     </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">SC.SplitDividerView</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>170</span>       </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">flexibleView.get</span><span class="PUNC">(</span><span class="STRN">'nextSibling'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>172</span>     
+<span class='line'>173</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'>175</span>   
+<span class='line'>176</span>   </span><span class="COMM">/**
+<span class='line'>177</span>     Layout the views.
+<span class='line'>178</span>     
+<span class='line'>179</span>     This method needs to be called anytime you change the view thicknesses
+<span class='line'>180</span>     to make sure they are arranged properly.  This will setup the views so
+<span class='line'>181</span>     that they can resize appropriately.
+<span class='line'>182</span>   */</span><span class="WHIT">
+<span class='line'>183</span>   </span><span class="NAME">layout</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">views</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'childNodes'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span>     
+<span class='line'>187</span>     </span><span class="COMM">// find the flexible view, if it is not set.  </span><span class="WHIT">
+<span class='line'>188</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.computeFlexibleView</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>189</span> 
+<span class='line'>190</span>     </span><span class="COMM">// everything before the flexible view is anchored to the left/top</span><span class="WHIT">
+<span class='line'>191</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'layoutDirection'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">views</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>193</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span>     </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>195</span>       </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">isCollapsed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'isCollapsed'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">NO</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span>       </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'isVisible'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">isCollapsed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">isCollapsed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>198</span>         </span><span class="NAME">view.viewFrameWillChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span>         </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleLeft'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleRight'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span>         </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>203</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleTop'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>204</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleBottom'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span>         </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>206</span>         </span><span class="NAME">view.viewFrameDidChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> 
+<span class='line'>208</span>         </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.thicknessForView</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>210</span>       </span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'nextSibling'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>211</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>212</span> 
+<span class='line'>213</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">flexHead</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>214</span>     
+<span class='line'>215</span>     </span><span class="COMM">// everything after the flexible view is anchored to the right/bottom.</span><span class="WHIT">
+<span class='line'>216</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">views.last</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>217</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>218</span>     </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>219</span>       </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">isCollapsed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'isCollapsed'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">NO</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>220</span>       </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'isVisible'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">isCollapsed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>221</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">isCollapsed</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>222</span>         </span><span class="NAME">view.viewFrameWillChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>223</span>         </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>224</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleLeft'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>225</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleRight'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>226</span>         </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>227</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleTop'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span>           </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleBottom'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>229</span>         </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>230</span>         </span><span class="NAME">view.viewFrameDidChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> 
+<span class='line'>232</span>         </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.thicknessForView</span><span class="PUNC">(</span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>233</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>234</span>       </span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">view.get</span><span class="PUNC">(</span><span class="STRN">'previousSibling'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>235</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>236</span>     
+<span class='line'>237</span>     </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">flexTail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>238</span>     
+<span class='line'>239</span>     </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">flexibleView</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>240</span>       </span><span class="NAME">view</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">flexibleView</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>241</span>       </span><span class="NAME">view.viewFrameWillChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">direction</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">SC.HORIZONTAL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>243</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleLeft'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flexHead</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>244</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleRight'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flexTail</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>245</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleWidth'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>246</span>       </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>247</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleTop'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flexHead</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>248</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleBottom'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">flexTail</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>249</span>         </span><span class="NAME">view.setIfChanged</span><span class="PUNC">(</span><span class="STRN">'styleHeight'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>250</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>251</span>       </span><span class="NAME">view.viewFrameDidChange</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>252</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>253</span>     
+<span class='line'>254</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>255</span> 
+<span class='line'>256</span>   </span><span class="COMM">/**
+<span class='line'>257</span>     (DELEGATE) Control whether a view can be collapsed.
+<span class='line'>258</span>     
+<span class='line'>259</span>     The default implemention returns YES.
+<span class='line'>260</span>     
+<span class='line'>261</span>     @param {SC.SplitView} splitView the split view
+<span class='line'>262</span>     @param {SC.View} view the view we want to collapse.
+<span class='line'>263</span>     @returns {Boolean} YES to allow collapse.
+<span class='line'>264</span>   */</span><span class="WHIT">
+<span class='line'>265</span>   </span><span class="NAME">splitViewCanCollapse</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">splitView</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">view</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">YES</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>266</span> 
+<span class='line'>267</span>   </span><span class="COMM">/**
+<span class='line'>268</span>     (DELEGATE) Constrain a views allowed thickness.
+<span class='line'>269</span>     
+<span class='line'>270</span>     The default implementation allows any thickness.  The view will
+<span class='line'>271</span>     automatically constrain the view to not allow views to overflow the 
+<span class='line'>272</span>     visible area.
+<span class='line'>273</span>     
+<span class='line'>274</span>     @param {SC.SplitView} splitView the split view
+<span class='line'>275</span>     @param {SC.View} view the view in question
+<span class='line'>276</span>     @param {Number} proposedThickness the proposed thickness.
+<span class='line'>277</span>     @returns the allowed thickness
+<span class='line'>278</span>   */</span><span class="WHIT">
+<span class='line'>279</span>   </span><span class="NAME">splitViewConstrainThickness</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">splitView</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">view</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">proposedThickness</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>280</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">proposedThickness</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span>   </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>282</span>   
+<span class='line'>283</span>   </span><span class="COMM">/** @private */</span><span class="WHIT">
+<span class='line'>284</span>   </span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>285</span>     </span><span class="NAME">sc_super</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span>     </span><span class="NAME">this.addClassName</span><span class="PUNC">(</span><span class="NAME">this.get</span><span class="PUNC">(</span><span class="STRN">'layoutDirection'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>287</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>288</span>   
+<span class='line'>289</span>   
+<span class='line'>290</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>291</span> 
+<span class='line'>292</span> 
+<span class='line'>293</span> </span></pre></body></html>

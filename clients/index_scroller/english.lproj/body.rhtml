@@ -1,0 +1,18 @@
+<% content_for('body') do %>
+	<% split_view :workspace, :class => 'sc-app-workspace', :style => 'height: 200px', :direction => :horizontal do %>
+		<% view :sidebar, :outlet => true do %>
+			<% scroll_view :master_list, :outlet => true do %>
+				<%= list_view 	:list,
+								:view => 'IndexScroller.MyListView',
+								:outlet => true, 
+								:content_value_key => 'fullName',
+								:bind => { :content => 'IndexScroller.listController.arrangedObjects' }
+				%>
+			<% end %>
+		<% end %>
+		<%= split_divider_view :outlet => true, :width => 5 %>
+		<% view :detail_view, :outlet => true, :style => 'padding: 10px' do %>
+				<%= view :demo_scroller, :view => "IndexScroller.IndexScrollerView", :tag => 'ul', :class => 'index-scroller-view' %>
+		<% end %>
+	<% end %>
+<% end %>

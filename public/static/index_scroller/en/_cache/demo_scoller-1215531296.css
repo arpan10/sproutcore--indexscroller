@@ -1,0 +1,22 @@
+.demo_scroller .index_hud {
+	background-color: #000;
+	padding: 5px;
+	margin: 5px;
+/*	height: 18px;	*/
+}
+
+.demo_scroller .index_hud ul{
+	list-style: none;
+	padding: 0;
+}
+
+.demo_scroller ul li {
+	display: inline;
+	color: #ccc;
+	font-size: 20px;
+	padding: 0 5px;
+}
+
+.demo_scroller ul li.sel {
+	color: #f00;
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="/static/sproutcore/en/detect-browser?1216746211" type="text/javascript"></script>
+    
+      <link href="/static/sproutcore/en/stylesheet.css?1216746211" rel="stylesheet" type="text/css" />
+  <link href="/static/index_scroller/en/stylesheet.css?1216745612" rel="stylesheet" type="text/css" />
+
+  </head>
+  <body class="sc-theme focus">  
+    <script type="text/javascript">
+    if (SC.setupBodyClassNames) SC.setupBodyClassNames() ;
+    </script>
+      
+    <!-- Main Page Body -->
+    <div id="workspace" class="sc-app-workspace sc-split-view horizontal workspace" style="height: 200px"><div class="sidebar"><div class="sc-scroll-view master_list">				<div class="sc-collection-view sc-list-view list"></div>
+</div></div>		<div class="sc-split-divider-view id_1216922259" style="width: 5px;"></div>
+<div class="detail_view" style="padding: 10px">				<ul id="demo_scroller" class="index-scroller-view demo_scroller"></ul>
+</div></div>
+
+    <!-- Resources to be removed from DOM on page load -->
+    <div id="resources" style="display:none; visibility: hidden;">
+          </div>
+
+    <!-- Include Site Javascript -->
+      <script type="text/javascript" src="/static/prototype/en/javascript.js?1216746211"></script>
+  <script type="text/javascript" src="/static/sproutcore/en/javascript.js?1216746212"></script>
+  <script type="text/javascript" src="/static/index_scroller/en/javascript.js?1216921014"></script>
+<script type="text/javascript">String.preferredLanguage = "en";</script>
+
+
+<!-- Render Page Views -->
+<script type="text/javascript">
+SC.page = SC.Page.create({
+  demoScroller: IndexScroller.IndexScrollerView.extend({
+    
+  }).outletFor("#demo_scroller") ,
+
+  workspace: SC.SplitView.extend({
+    outlets: ["sidebar","id1216922259","detailView"],
+    
+    sidebar: SC.View.extend({
+      outlets: ["masterList"],
+      
+      masterList: SC.ScrollView.extend({
+        outlets: ["list"],
+        
+        list: IndexScroller.MyListView.extend({
+          contentBinding: "IndexScroller.listController.arrangedObjects",
+          
+          contentValueKey: "fullName",
+          hasContentBranch: false,
+          hasContentIcon: false,
+          acceptsFirstResponder: true
+        }).outletFor(".list?")
+      }).outletFor(".master_list?")
+    }).outletFor(".sidebar?"),
+    
+    id1216922259: SC.SplitDividerView.extend({
+      
+    }).outletFor(".id_1216922259?"),
+    
+    detailView: SC.View.extend({
+      
+    }).outletFor(".detail_view?"),
+    
+    layoutDirection: "horizontal"
+  }).outletFor("#workspace") 
+}); 
+</script>
+
+    <!-- Start SproutCore on Page Load -->
+    <script type="text/javascript">window.onload = SC.didLoad;</script>
+
+	</body>
+</html>
